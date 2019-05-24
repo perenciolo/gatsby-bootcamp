@@ -1,27 +1,55 @@
-import React from 'react'
-import { graphql } from 'gatsby'
+import React from "react"
+import { graphql, Link } from "gatsby"
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 
-import Layout from '../components/layout'
+import Layout from "../components/layout"
 
-export const query = graphql`query ($slug: String!) {
-  markdownRemark (
-    fields: { slug: { eq: $slug } }
-  ) {
-    frontmatter {
+export const query = graphql`
+  query($slug: String!) {
+    contentfulBlogPost(slug: { eq: $slug }) {
       title
-      date
+      publishedDate(formatString: "DD MMMM YYYY")
+      body {
+        json
+      }
     }
-    html
   }
-}`
+`
+// CREATE MARKDOWN QUERY
+// export const query = graphql`query ($slug: String!) {
+//   markdownRemark (
+//     fields: { slug: { eq: $slug } }
+//   ) {
+//     frontmatter {
+//       title
+//       date
+//     }
+//     html
+//   }
+// }`
 
-const Blog = (props) => {
+const Blog = props => {
+  const options = {
+    renderNode: {
+      "embedded-asset-block": node => {
+        const alt = node.data.target.fields.title['en-US']
+        const url = node.data.target.fields.file['en-US'].url
 
+        return <img src={url} alt={alt} />
+      },
+    },
+  }
   return (
     <Layout>
-      <h1>{props.data.markdownRemark.frontmatter.title}</h1>
-      <p><small>{props.data.markdownRemark.frontmatter.date}</small></p>
-      <div dangerouslySetInnerHTML={{ __html: props.data.markdownRemark.html }}></div>
+      <h1>{props.data.contentfulBlogPost.title}</h1>
+      <p>
+        <small>{props.data.contentfulBlogPost.publishedDate}</small>
+      </p>
+      {documentToReactComponents(
+        props.data.contentfulBlogPost.body.json,
+        options
+      )}
+      <Link to="/blog">Back to all posts</Link>
     </Layout>
   )
 }
