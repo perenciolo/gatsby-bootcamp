@@ -1,32 +1,38 @@
 import React from "react"
-import { graphql, useStaticQuery } from 'gatsby'
+import { graphql, useStaticQuery } from "gatsby"
+import Head from "../components/head"
 
 import Layout from "../components/layout"
 
 const ContactPage = () => {
-  const data = useStaticQuery(graphql`query {
-    site {
-      siteMetadata {
-        twitter
-        twitterUrl
+  const data = useStaticQuery(graphql`
+    query {
+      site {
+        siteMetadata {
+          twitter
+          twitterUrl
+        }
       }
     }
-  }`)
+  `)
 
   return (
     <Layout>
+      <Head title="Contact" />
       <h1>Contact Page</h1>
       <p>
         The best way to reach me is via{" "}
         <a
           target="_blank"
           rel="noopener noreferrer"
-          href={`${data.site.siteMetadata.twitterUrl}${data.site.siteMetadata.twitter}`}
+          href={`${data.site.siteMetadata.twitterUrl}${
+            data.site.siteMetadata.twitter
+          }`}
         >
           {` ${data.site.siteMetadata.twitter} `}
-      </a>
+        </a>
         on Twiter
-    </p>
+      </p>
     </Layout>
   )
 }
